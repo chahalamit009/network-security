@@ -21,12 +21,14 @@ tcpSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 tcpSocket.bind(("0.0.0.0",8000))
 #how many clients can connect at a time
 tcpSocket.listen(5)
-
+workerProcesses = []
 print "Waiting for a Client ...."
 while True:
     (client, ( ip, sock)) = tcpSocket.accept()
     client.settimeout(120)
-    mp.Process(target=listen_client,args=(client,(ip,sock))).start()
+    worker = mp.Process(target=listen_client,args=(client,(ip,sock)))
+    worker.start()
+    workerProcesses.append(worker)
 
 print "Shutting down server ..."
 tcpSocket.close()
